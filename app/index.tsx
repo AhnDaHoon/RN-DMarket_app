@@ -2,6 +2,10 @@ import { Redirect } from "expo-router";
 
 export default function Index() {
   return (
-    <Redirect href="/(tabs)/home" />
+    <Redirect 
+      href={{
+        pathname: "/(tabs)/home",
+      }}
+    />
   );
 }

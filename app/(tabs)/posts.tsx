@@ -1,18 +1,18 @@
+import { useEffect, useState } from "react";
 import { Dimensions, FlatList, StyleSheet, Text, View } from "react-native";
 
 export default function Posts() {
-  const posts: {id: number, title: string}[] = [
-    {id: 1, title: "첫 번째 게시글"},
-    {id: 2, title: "두 번째 게시글"},
-    {id: 3, title: "세 번째 게시글"},
-    {id: 4, title: "네 번째 게시글"},
-    {id: 5, title: "다섯 번째 게시글"},
-    {id: 6, title: "여섯 번째 게시글"},
-    {id: 7, title: "일곱 번째 게시글"},
-    {id: 8, title: "여덟 번째 게시글"},
-    {id: 9, title: "아홉 번째 게시글"},
-    {id: 10, title: "열 번째 게시글"},
-  ]
+  const [posts, setPosts] = useState<{id: number; title: string}[]>([]);
+
+  useEffect(() => {
+    fetch("https://jsonplaceholder.typicode.com/posts")
+      .then((response) => response.json())
+      .then((data) => setPosts(data))
+      .catch((error) => console.error("Error fetching posts:", error)); 
+
+
+  }, []);
+
   return (
     <View style={styles.postsContainer}>
       <FlatList
@@ -20,9 +20,10 @@ export default function Posts() {
         keyExtractor={(item) => item.id.toString()}
         contentContainerStyle={styles.listWrap}
         renderItem={({ item }) => (
-          <Text style={styles.postItem}>
-            {item.id}. {item.title}
-          </Text>
+          <View style={styles.postItem}>
+            <Text style={styles.postId}>{item.id}번 게시글</Text>
+            <Text style={styles.postTitle}>{item.title}</Text>
+          </View>
         )}
       />
     </View>
@@ -53,6 +54,13 @@ const styles = StyleSheet.create({
     shadowRadius: 3.84, 
     elevation: 5, // 안드로이드에서 그림자 효과를 주기 위한 속성
     fontSize: 16,
-
-  }
+  },
+  postId: {
+    fontSize: 16,
+    fontWeight: "bold",
+  },
+  postTitle: {
+    fontSize: 16,
+    marginTop: 5,
+  },
 })
