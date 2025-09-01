@@ -1,20 +1,32 @@
+import { db } from "@/firebase/config";
 import { PostWithContentDto } from "@/types/post";
 import { useLocalSearchParams } from "expo-router";
+import { collection, getDocs, query, where } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { ScrollView, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function Post() {
-  const { userId, id, title, body } = useLocalSearchParams();
+  const { postId } = useLocalSearchParams();
   const [post, setPost] = useState<PostWithContentDto | null>(null);
 
+  const fetchPost = async () => {
+    try {
+      const postsQuery = query(
+          collection(db, "post")
+          , where("postId", "==", Number(postId))
+      );
+
+      const postSnapshot = await getDocs(postsQuery);
+      const postData = postSnapshot.docs[0].data();
+      setPost(postData as PostWithContentDto);
+    } catch (error) {
+      console.error("Error fetching posts:", error);
+    }
+  };
+
   useEffect(() => { 
-    setPost({
-      userId: Number(userId),
-      id: Number(id),
-      title: title as string,
-      body: body as string
-    });
+    fetchPost();
   }
   , []);
 
@@ -24,11 +36,10 @@ export default function Post() {
     <ScrollView contentContainerStyle={{ paddingBottom: 32 }}>
       <View style={styles.postCard}>
         <View style={styles.header}>
-          <Text style={styles.postId}>작성자 {post?.userId}</Text>
           <Text style={styles.postTitle}>{post?.title}</Text>
         </View>
         <View style={styles.body}>
-          <Text style={styles.postBody}>{post?.body}</Text>
+          <Text style={styles.postBody}>{post?.content}</Text>
         </View>
       </View>
     </ScrollView>

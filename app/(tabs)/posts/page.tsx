@@ -1,22 +1,39 @@
+import { db } from "@/firebase/config";
 import { PostDto } from "@/types/post";
 import { Link } from "expo-router";
+import { collection, getDocs, orderBy, query } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { Dimensions, FlatList, StyleSheet, Text, View } from "react-native";
 
 export default function Posts() {
-  const [posts, setPosts] = useState<PostDto[]>([]);
+  const [posts, setPosts] = useState<PostDto[] | null>(null);
 
+  const fetchPosts = async () => {
+    try {
+      const postsQuery = query(
+          collection(db, "post")
+          , orderBy("postId", "desc")
+      );
+
+      const postSnapshot = await getDocs(postsQuery);
+      const postsData = postSnapshot.docs.map(doc => {
+        const {postId, createDate, title, content} = doc.data();
+        return {
+          id: doc.id,
+          postId: postId,
+          createDate: createDate,
+          title: title,
+          content: content
+        } as PostDto;
+      });
+      setPosts(postsData);
+    } catch (error) {
+      console.error("Error fetching posts:", error);
+    }
+  };
 
   useEffect(() => {
-    const fetchPosts = async () => {
-      try {
-        const response = await fetch("https://jsonplaceholder.typicode.com/posts");
-        const data = await response.json();
-        setPosts(data);
-      } catch (error) {
-        console.error("Error fetching posts:", error);
-      }
-    };
+
     fetchPosts();
   }, []);
 
@@ -34,10 +51,9 @@ export default function Posts() {
               href={{
                 pathname: `/posts/[id]/post`,
                 params: { 
-                  userId: item.userId,
                   id: item.id,
-                  title: item.title,
-                  body: item.body
+                  postId: item.postId,
+                  body: item.content,
                 }
               }}
             >
