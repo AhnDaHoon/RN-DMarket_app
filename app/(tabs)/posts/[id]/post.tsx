@@ -1,24 +1,34 @@
+import { PostWithContentDto } from "@/types/post";
 import { useLocalSearchParams } from "expo-router";
+import { useEffect, useState } from "react";
 import { ScrollView, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function Post() {
-  const { userId, title, body } = useLocalSearchParams();
+  const { userId, id, title, body } = useLocalSearchParams();
+  const [post, setPost] = useState<PostWithContentDto | null>(null);
 
+  useEffect(() => { 
+    setPost({
+      userId: Number(userId),
+      id: Number(id),
+      title: title as string,
+      body: body as string
+    });
+  }
+  , []);
+
+  
   return (
   <SafeAreaView style={{ flex: 1 }}>
     <ScrollView contentContainerStyle={{ paddingBottom: 32 }}>
       <View style={styles.postCard}>
         <View style={styles.header}>
-          <Text style={styles.postId}>작성자 {userId}</Text>
-          <Text style={styles.postTitle}>{title}</Text>
+          <Text style={styles.postId}>작성자 {post?.userId}</Text>
+          <Text style={styles.postTitle}>{post?.title}</Text>
         </View>
         <View style={styles.body}>
-          <Text style={styles.postBody}>{body}</Text>
-          <Text style={styles.postBody}>{body}</Text>
-          <Text style={styles.postBody}>{body}</Text>
-          <Text style={styles.postBody}>{body}</Text>
-          <Text style={styles.postBody}>{body}</Text>
+          <Text style={styles.postBody}>{post?.body}</Text>
         </View>
       </View>
     </ScrollView>

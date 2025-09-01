@@ -1,9 +1,10 @@
+import { PostDto } from "@/types/post";
 import { Link } from "expo-router";
 import { useEffect, useState } from "react";
 import { Dimensions, FlatList, StyleSheet, Text, View } from "react-native";
 
 export default function Posts() {
-  const [posts, setPosts] = useState<{userId: string, id: number; title: string, body: string}[]>([]);
+  const [posts, setPosts] = useState<PostDto[]>([]);
 
 
   useEffect(() => {
