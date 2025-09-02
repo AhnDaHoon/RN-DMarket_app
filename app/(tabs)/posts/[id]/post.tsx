@@ -2,26 +2,26 @@ import { db } from "@/firebase/config";
 import { PostWithContentDto } from "@/types/post";
 import { Feather, FontAwesome6, MaterialCommunityIcons, Octicons } from "@expo/vector-icons";
 import { router, useLocalSearchParams } from "expo-router";
-import { collection, getDocs, query, where } from "firebase/firestore";
+import { doc, getDoc } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { Dimensions, Pressable, StyleSheet, Text, View } from "react-native";
 
 const WIDTH = Dimensions.get("window").width;
 
 export default function Post() {
-  const { postId } = useLocalSearchParams();
+  const { id, postId } = useLocalSearchParams();
   const [post, setPost] = useState<PostWithContentDto | null>(null);
 
   const fetchPost = async () => {
     try {
-      const postsQuery = query(
-          collection(db, "post")
-          , where("postId", "==", Number(postId))
-      );
 
-      const postSnapshot = await getDocs(postsQuery);
-      const postData = postSnapshot.docs[0].data();
-      setPost(postData as PostWithContentDto);
+      const postRef = doc(db, "post", id as string);
+      const postSnap = await getDoc(postRef);
+
+      if(postSnap.exists()) {
+        const post = postSnap.data() as PostWithContentDto;
+        setPost(post);
+      }
     } catch (error) {
       console.error("Error fetching posts:", error);
     }
