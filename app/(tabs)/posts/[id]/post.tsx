@@ -11,6 +11,7 @@ const WIDTH = Dimensions.get("window").width;
 export default function Post() {
   const { id, postId } = useLocalSearchParams();
   const [post, setPost] = useState<PostWithContentDto | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   const fetchPost = async () => {
     try {
@@ -23,7 +24,8 @@ export default function Post() {
         setPost(post);
       }
     } catch (error) {
-      console.error("Error fetching posts:", error);
+      console.error(error);
+      setError("오류 발생")
     }
   };
 
@@ -32,6 +34,13 @@ export default function Post() {
   }
   , []);
 
+  if(!post) {
+    return (
+      <View style={styles.postsContainer}>
+        <Text style={styles.loadingText}>Loading...</Text>
+      </View>
+    );
+  }
   
   return (
     <View style={styles.postContainer}>
@@ -107,6 +116,19 @@ export default function Post() {
 }
 
 const styles = StyleSheet.create({
+  postsContainer: {
+    flex: 1,
+    alignContent: "center",
+  },
+  loadingText: {
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    fontSize: 20,
+    fontWeight: "bold",
+    textAlign: "center",
+  },
+
   postContainer: {
     flex: 1,
     backgroundColor: "#f2f2f2",

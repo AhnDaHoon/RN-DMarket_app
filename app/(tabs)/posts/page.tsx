@@ -7,6 +7,7 @@ import { Dimensions, FlatList, StyleSheet, Text, View } from "react-native";
 
 export default function Posts() {
   const [posts, setPosts] = useState<PostDto[] | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   const fetchPosts = async () => {
     try {
@@ -28,7 +29,9 @@ export default function Posts() {
       });
       setPosts(postsData);
     } catch (error) {
-      console.error("Error fetching posts:", error);
+      console.error(error);
+      setError("게시글을 불러오는 중에 오류가 발생했습니다.");
+    } finally {
     }
   };
 
@@ -36,6 +39,14 @@ export default function Posts() {
 
     fetchPosts();
   }, []);
+
+  if(!posts) {
+    return (
+      <View style={styles.postsContainer}>
+        <Text style={styles.loadingText}>Loading...</Text>
+      </View>
+    );
+  }
 
   return (
     <View style={styles.postsContainer}>
@@ -71,7 +82,16 @@ const WIDTH = Dimensions.get("window").width;
 
 const styles = StyleSheet.create({
   postsContainer: {
+    flex: 1,
     alignContent: "center",
+  },
+  loadingText: {
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    fontSize: 20,
+    fontWeight: "bold",
+    textAlign: "center",
   },
   listWrap: {
     width: WIDTH - 16,
