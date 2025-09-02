@@ -1,10 +1,12 @@
 import { db } from "@/firebase/config";
 import { PostWithContentDto } from "@/types/post";
-import { useLocalSearchParams } from "expo-router";
+import { Feather, MaterialCommunityIcons, Octicons } from "@expo/vector-icons";
+import { router, useLocalSearchParams } from "expo-router";
 import { collection, getDocs, query, where } from "firebase/firestore";
 import { useEffect, useState } from "react";
-import { ScrollView, StyleSheet, Text, View } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { Dimensions, Pressable, StyleSheet, Text, View } from "react-native";
+
+const WIDTH = Dimensions.get("window").width;
 
 export default function Post() {
   const { postId } = useLocalSearchParams();
@@ -32,39 +34,72 @@ export default function Post() {
 
   
   return (
-  <SafeAreaView style={{ flex: 1 }}>
-    <ScrollView contentContainerStyle={{ paddingBottom: 32 }}>
-      <View style={styles.postCard}>
-        <View style={styles.header}>
-          <Text style={styles.postTitle}>{post?.title}</Text>
+    <View style={styles.postContainer}>
+      <View style={styles.postInner}>
+        <View style={styles.postHeader}>
+          <View style={styles.postHeaderLeft}>
+            <Pressable onPress={() => router.back()}>
+              <Octicons name="chevron-left" size={24} color="black" />
+            </Pressable>
+          </View>
+          <View style={styles.postHeaderRight}>
+            <Pressable onPress={() => {}}>
+              <Octicons name="bell" size={24} color="black" />
+            </Pressable> 
+            <Pressable onPress={() => {}}>
+              <Feather name="upload" size={24} color="black" />
+            </Pressable> 
+            <Pressable onPress={() => {}}>
+              <MaterialCommunityIcons name="dots-vertical" size={24} color="black" />
+            </Pressable> 
+          </View>
         </View>
-        <View style={styles.body}>
-          <Text style={styles.postBody}>{post?.content}</Text>
+        <View style={styles.postContentContainer}>
+          <View style={styles.contentHeader} />
+          <View style={styles.contentBody}>
+            <View style={styles.contentTitleWrap}>
+              <Text style={styles.postTitleContent}>{post?.title}</Text>
+            </View>
+            <View style={styles.contentBodyWrap}>
+              <Text style={styles.postBody}>{post?.content}</Text>
+            </View>
+          </View>
         </View>
       </View>
-    </ScrollView>
-  </SafeAreaView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
+  postContainer: {
     flex: 1,
     backgroundColor: "#f2f2f2",
+    marginTop: 40,
+  },
+  postInner: {
+    width: WIDTH,
     padding: 16,
-  },
-  postCard: {
     backgroundColor: "#fff",
-    borderRadius: 12,
-    padding: 20,
     shadowColor: "#000",
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.1,
-    shadowRadius: 6,
-    elevation: 4,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
   },
-  header: {
-    marginBottom: 12,
+  postHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    borderBottomWidth: 1,
+    borderBottomColor: "#ccc",
+    paddingVertical: 10,
+    paddingHorizontal: 10,
+  },
+  postHeaderLeft: {
+  },
+  postHeaderRight: {
+    flexDirection: "row",
+    gap: 10,
   },
   postId: {
     fontSize: 12,
